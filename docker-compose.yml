@@ -1,0 +1,41 @@
+services:
+  mysqldb:
+    image: mysql:8
+    container_name: mysql-db-practice
+    environment:
+      MYSQL_ROOT_PASSWORD: docker
+      MYSQL_DATABASE: cardb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - springboot-mysql-net
+
+  backend:
+    image: nunesridurga/docker-practice-backend:latest
+    container_name: springboot-practice
+    ports:
+      - "2025:6004"
+    depends_on:
+      - mysqldb
+    restart: on-failure
+    networks:
+      - springboot-mysql-net
+
+  frontend:
+    image: nunesridurga/docker-practice-frontend:latest
+    container_name: react-practice
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: on-failure
+    networks:
+      - springboot-mysql-net
+
+volumes:
+  mysql_data:
+
+networks:
+  springboot-mysql-net:
